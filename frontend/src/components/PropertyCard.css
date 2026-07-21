@@ -1,0 +1,82 @@
+.property-card {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: transform 150ms ease, box-shadow 150ms ease;
+  cursor: pointer;
+}
+
+.property-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.property-card__photo {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: #eef1f5;
+  overflow: hidden;
+}
+
+.property-card__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.property-card__no-photo,
+.property-card__photo--broken::before {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a1b2;
+  font-size: 0.9rem;
+}
+
+.property-card__photo--broken::before {
+  content: "Image unavailable";
+}
+
+.property-card__body {
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.property-card__price {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #111;
+}
+
+.property-card__address {
+  font-size: 0.95rem;
+  color: #222;
+}
+
+.property-card__location {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.property-card__stats {
+  display: flex;
+  gap: 14px;
+  font-size: 0.85rem;
+  color: #374151;
+  border-top: 1px solid #eef1f5;
+  padding-top: 10px;
+}
+
+.property-card__stats strong {
+  color: #111;
+}

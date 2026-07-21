@@ -1,0 +1,40 @@
+.listings-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+}
+
+.listings-page__header {
+  margin-bottom: 24px;
+}
+
+.listings-page__header h1 {
+  margin: 0 0 4px;
+  font-size: 1.8rem;
+  color: #111;
+}
+
+.listings-page__count {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.listings-page__status {
+  padding: 32px;
+  text-align: center;
+  color: #6b7280;
+  background: #f7f8fa;
+  border-radius: 12px;
+}
+
+.listings-page__status--error {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.listings-page__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
