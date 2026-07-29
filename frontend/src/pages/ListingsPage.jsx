@@ -1,11 +1,23 @@
 import { useEffect, useState } from "react";
 import { fetchProperties } from "../api/client";
 import PropertyCard from "../components/PropertyCard";
+import PropertyFilters from "../components/PropertyFilters";
 import "./ListingsPage.css";
 
 const PAGE_SIZE = 20;
 
+function cleanFilters(raw) {
+  const cleaned = {};
+  Object.entries(raw).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && String(value).trim() !== "") {
+      cleaned[key] = value;
+    }
+  });
+  return cleaned;
+}
+
 export default function ListingsPage() {
+  const [filters, setFilters] = useState({});
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -15,8 +27,9 @@ export default function ListingsPage() {
 
     setLoading(true);
     setError(null);
+    setData(null);
 
-    fetchProperties({ limit: PAGE_SIZE, offset: 0 })
+    fetchProperties({ ...cleanFilters(filters), limit: PAGE_SIZE, offset: 0 })
       .then((response) => {
         if (cancelled) return;
         setData(response);
@@ -33,7 +46,10 @@ export default function ListingsPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [filters]);
+
+  const handleSearch = (newFilters) => setFilters(newFilters);
+  const handleClear = () => setFilters({});
 
   return (
     <div className="listings-page">
@@ -46,6 +62,8 @@ export default function ListingsPage() {
         )}
       </header>
 
+      <PropertyFilters onSearch={handleSearch} onClear={handleClear} />
+
       {loading && <div className="listings-page__status">Loading properties…</div>}
 
       {error && (
@@ -55,7 +73,9 @@ export default function ListingsPage() {
       )}
 
       {!loading && !error && data && data.results.length === 0 && (
-        <div className="listings-page__status">No properties found.</div>
+        <div className="listings-page__status">
+          No properties match your filters. Try broadening your search.
+        </div>
       )}
 
       {!loading && !error && data && data.results.length > 0 && (
