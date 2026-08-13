@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { fetchProperties } from "../api/client";
 import PropertyCard from "../components/PropertyCard";
 import PropertyFilters from "../components/PropertyFilters";
+import Pagination from "../components/Pagination";
 import "./ListingsPage.css";
 
-const PAGE_SIZE = 20;
+const ITEMS_PER_PAGE = 20;
 
 function cleanFilters(raw) {
   const cleaned = {};
@@ -18,6 +19,7 @@ function cleanFilters(raw) {
 
 export default function ListingsPage() {
   const [filters, setFilters] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -29,7 +31,9 @@ export default function ListingsPage() {
     setError(null);
     setData(null);
 
-    fetchProperties({ ...cleanFilters(filters), limit: PAGE_SIZE, offset: 0 })
+    const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+    fetchProperties({ ...cleanFilters(filters), limit: ITEMS_PER_PAGE, offset })
       .then((response) => {
         if (cancelled) return;
         setData(response);
@@ -46,18 +50,34 @@ export default function ListingsPage() {
     return () => {
       cancelled = true;
     };
-  }, [filters]);
+  }, [filters, currentPage]);
 
-  const handleSearch = (newFilters) => setFilters(newFilters);
-  const handleClear = () => setFilters({});
+  const handleSearch = (newFilters) => {
+    setFilters(newFilters);
+    setCurrentPage(1);
+  };
+
+  const handleClear = () => {
+    setFilters({});
+    setCurrentPage(1);
+  };
+
+  const handlePageChange = (nextPage) => {
+    setCurrentPage(nextPage);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const totalPages = data ? Math.max(1, Math.ceil(data.total / ITEMS_PER_PAGE)) : 1;
+  const rangeStart = data && data.results.length > 0 ? (currentPage - 1) * ITEMS_PER_PAGE + 1 : 0;
+  const rangeEnd = data ? rangeStart + data.results.length - 1 : 0;
 
   return (
     <div className="listings-page">
       <header className="listings-page__header">
         <h1>Properties</h1>
-        {data && (
+        {data && data.results.length > 0 && (
           <p className="listings-page__count">
-            Showing {data.results.length} of {data.total.toLocaleString()} properties
+            Showing {rangeStart}–{rangeEnd} of {data.total.toLocaleString()} properties
           </p>
         )}
       </header>
@@ -79,11 +99,18 @@ export default function ListingsPage() {
       )}
 
       {!loading && !error && data && data.results.length > 0 && (
-        <div className="listings-page__grid">
-          {data.results.map((property) => (
-            <PropertyCard key={property.id} property={property} />
-          ))}
-        </div>
+        <>
+          <div className="listings-page__grid">
+            {data.results.map((property) => (
+              <PropertyCard key={property.id} property={property} />
+            ))}
+          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </>
       )}
     </div>
   );

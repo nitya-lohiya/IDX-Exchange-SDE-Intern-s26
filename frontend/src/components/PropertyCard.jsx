@@ -1,20 +1,6 @@
+import { Link } from "react-router-dom";
+import PropertyImageCarousel from "./PropertyImageCarousel";
 import "./PropertyCard.css";
-
-function parseFirstPhoto(rawPhotos) {
-  if (!rawPhotos) return null;
-  try {
-    const parsed = JSON.parse(rawPhotos);
-    if (!Array.isArray(parsed) || parsed.length === 0) return null;
-    const first = parsed[0];
-    if (typeof first === "string") return first;
-    if (first && typeof first === "object") {
-      return first.url || first.Uri || first.href || null;
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}
 
 function formatPrice(price) {
   if (price === null || price === undefined) return "Price on request";
@@ -35,7 +21,6 @@ function formatBaths(baths) {
 }
 
 export default function PropertyCard({ property }) {
-  const photo = parseFirstPhoto(property.L_Photos || property.photos);
   const address = property.address || property.L_Address || "Address unavailable";
   const city = property.city || property.L_City || "";
   const state = property.state || property.L_State || "";
@@ -46,34 +31,25 @@ export default function PropertyCard({ property }) {
 
   return (
     <article className="property-card">
-      <div className="property-card__photo">
-        {photo ? (
-          <img
-            src={photo}
-            alt={address}
-            loading="lazy"
-            onError={(e) => {
-              e.currentTarget.style.display = "none";
-              e.currentTarget.parentElement.classList.add("property-card__photo--broken");
-            }}
-          />
-        ) : (
-          <div className="property-card__no-photo">No photo</div>
-        )}
-      </div>
+      <Link className="property-card__link" to={`/property/${property.id}`}>
+        <PropertyImageCarousel
+          rawPhotos={property.photos || property.L_Photos}
+          alt={address}
+        />
 
-      <div className="property-card__body">
-        <div className="property-card__price">{formatPrice(price)}</div>
-        <div className="property-card__address">{address}</div>
-        <div className="property-card__location">
-          {[city, state].filter(Boolean).join(", ") || "—"}
+        <div className="property-card__body">
+          <div className="property-card__price">{formatPrice(price)}</div>
+          <div className="property-card__address">{address}</div>
+          <div className="property-card__location">
+            {[city, state].filter(Boolean).join(", ") || "—"}
+          </div>
+          <div className="property-card__stats">
+            <span><strong>{beds ?? "—"}</strong> bd</span>
+            <span><strong>{formatBaths(baths)}</strong> ba</span>
+            <span><strong>{sqft ? Number(sqft).toLocaleString() : "—"}</strong> sqft</span>
+          </div>
         </div>
-        <div className="property-card__stats">
-          <span><strong>{beds ?? "—"}</strong> bd</span>
-          <span><strong>{formatBaths(baths)}</strong> ba</span>
-          <span><strong>{sqft ? Number(sqft).toLocaleString() : "—"}</strong> sqft</span>
-        </div>
-      </div>
+      </Link>
     </article>
   );
 }

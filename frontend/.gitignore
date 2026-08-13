@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# Local secrets — keep the API key out of git (.env.example is committed instead)
+.env
+.env.*
+!.env.example
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
