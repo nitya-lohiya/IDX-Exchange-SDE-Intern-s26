@@ -5,7 +5,9 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon --ext js,json,env server.js"
+    "dev": "nodemon --ext js,json,env server.js",
+    "perf": "node scripts/analyze-performance.js",
+    "perf:apply": "node scripts/analyze-performance.js --apply"
   },
   "keywords": [],
   "author": "",

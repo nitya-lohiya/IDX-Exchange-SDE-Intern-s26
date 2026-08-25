@@ -58,7 +58,14 @@ router.get("/", async (req, res) => {
     const values = [];
 
     if (city !== undefined) {
-      conditions.push("LOWER(TRIM(L_City)) = LOWER(TRIM(?))");
+      // Compare the column directly instead of wrapping it in LOWER()/TRIM().
+      // Calling a function on the column makes the predicate non-sargable, so
+      // MySQL has to evaluate it for every row and cannot use idx_L_City —
+      // that turned the paginated COUNT(*) into a ~230ms full scan.
+      // L_City is utf8mb4_0900_ai_ci, so plain `=` is already case- and
+      // accent-insensitive; the parameter is trimmed by parseStringParam, and
+      // TRIM(?) here is belt-and-braces on the value, not the column.
+      conditions.push("L_City = TRIM(?)");
       values.push(city);
     }
     if (zipcode !== undefined) {
