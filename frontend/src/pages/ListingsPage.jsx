@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { fetchProperties } from "../api/client";
+import useFavorites from "../hooks/useFavorites";
 import PropertyCard from "../components/PropertyCard";
 import PropertyFilters from "../components/PropertyFilters";
 import Pagination from "../components/Pagination";
@@ -18,6 +20,7 @@ function cleanFilters(raw) {
 }
 
 export default function ListingsPage() {
+  const { count: favoritesCount } = useFavorites();
   const [filters, setFilters] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [data, setData] = useState(null);
@@ -74,7 +77,13 @@ export default function ListingsPage() {
   return (
     <div className="listings-page">
       <header className="listings-page__header">
-        <h1>Properties</h1>
+        <div className="listings-page__titlebar">
+          <h1>Properties</h1>
+          <Link className="listings-page__favorites-link" to="/favorites">
+            ♥ Favorites
+            <span className="listings-page__favorites-count">{favoritesCount}</span>
+          </Link>
+        </div>
         {data && data.results.length > 0 && (
           <p className="listings-page__count">
             Showing {rangeStart}–{rangeEnd} of {data.total.toLocaleString()} properties

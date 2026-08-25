@@ -1,5 +1,7 @@
+import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import PropertyImageCarousel from "./PropertyImageCarousel";
+import FavoriteButton from "./FavoriteButton";
 import "./PropertyCard.css";
 
 function formatPrice(price) {
@@ -31,6 +33,11 @@ export default function PropertyCard({ property }) {
 
   return (
     <article className="property-card">
+      {/* Deliberately a sibling of the Link, not a child: a <button> inside an
+          <a> is invalid HTML, and keeping them separate means a heart click can
+          never reach the anchor in the first place. */}
+      <FavoriteButton propertyId={property.id} label={address} />
+
       <Link className="property-card__link" to={`/property/${property.id}`}>
         <PropertyImageCarousel
           rawPhotos={property.photos || property.L_Photos}
@@ -53,3 +60,27 @@ export default function PropertyCard({ property }) {
     </article>
   );
 }
+
+PropertyCard.propTypes = {
+  property: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    // The list endpoint returns friendly aliases; the detail endpoint returns
+    // raw MLS column names. The card renders either shape.
+    address: PropTypes.string,
+    city: PropTypes.string,
+    state: PropTypes.string,
+    price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    beds: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    baths: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    sqft: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    photos: PropTypes.string,
+    L_Address: PropTypes.string,
+    L_City: PropTypes.string,
+    L_State: PropTypes.string,
+    L_SystemPrice: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    L_Keyword2: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    LM_Dec_3: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    LM_Int2_3: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    L_Photos: PropTypes.string,
+  }).isRequired,
+};
