@@ -7,7 +7,10 @@
     "start": "node server.js",
     "dev": "nodemon --ext js,json,env server.js",
     "perf": "node scripts/analyze-performance.js",
-    "perf:apply": "node scripts/analyze-performance.js --apply"
+    "perf:apply": "node scripts/analyze-performance.js --apply",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +22,32 @@
     "mysql2": "^3.22.5"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "jest": "^30.5.1",
+    "nodemon": "^3.1.14",
+    "supertest": "^7.2.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": [
+      "<rootDir>/__tests__/setup.js"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "<rootDir>/__tests__/helpers.js",
+      "<rootDir>/__tests__/setup.js"
+    ],
+    "collectCoverageFrom": [
+      "routes/**/*.js",
+      "middleware/**/*.js",
+      "app.js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "statements": 70,
+        "branches": 70,
+        "functions": 70,
+        "lines": 70
+      }
+    }
   }
 }
